@@ -1,0 +1,24 @@
+FROM python:3.9-slim
+
+WORKDIR /openleadr
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libffi-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the entire package
+COPY . .
+
+# Install specific versions of dependencies
+RUN pip install pyOpenSSL==23.2.0 \
+    flask==2.3.3 \
+    flask-cors==4.0.0 \
+    && pip install -e .
+
+# Expose the ports the app runs on
+EXPOSE 8080 5002
+
+# Start the server
+CMD ["python", "script.py"] 

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./grid-ac-layout
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./grid-ac-layout:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  server:
+    build:
+      context: ./openleadr-python-main
+      dockerfile: Dockerfile.server
+    ports:
+      - "8080:8080"
+      - "5002:5002"
+    volumes:
+      - ./openleadr-python-main:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  client:
+    build:
+      context: ./openleadr-python-main
+      dockerfile: Dockerfile.client
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./openleadr-python-main:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - VTN_URL=http://server:8080/OpenADR2/Simple/2.0b
+    depends_on:
+      - server 
